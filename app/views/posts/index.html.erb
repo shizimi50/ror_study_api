@@ -1,0 +1,20 @@
+<div class="main posts-index">
+  <div class="container">
+  　<select name="prefecture">
+  　<option value="">ソート方法を選んで下さい</option>
+  　<option value="更新日時（降順）">更新日時（降順）</option>
+  　<option value="更新日時（昇順）">更新日時（昇順）</option>
+  　<option value="タイトル（降順）">タイトル（降順）</option>
+  　<option value="タイトル（昇順）">タイトル（昇順）</option>
+    </select>
+    <% @posts.each do |post| %>
+      <div class="posts-index-item">
+        <p>
+        <%=post.title%><br>
+        <%=post.updated_at%><br>
+        <%=post.name%>
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>
