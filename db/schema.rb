@@ -10,20 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_08_045549) do
-
-  create_table "comment_posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "post_id", null: false
-    t.bigint "comment_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["comment_id"], name: "index_comment_posts_on_comment_id"
-    t.index ["post_id"], name: "index_comment_posts_on_post_id"
-  end
+ActiveRecord::Schema.define(version: 2021_06_08_044952) do
 
   create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "comment", null: false
     t.string "comment_created_by", default: "名無し"
+    t.integer "post_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -36,6 +28,4 @@ ActiveRecord::Schema.define(version: 2021_06_08_045549) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  add_foreign_key "comment_posts", "comments"
-  add_foreign_key "comment_posts", "posts"
 end
