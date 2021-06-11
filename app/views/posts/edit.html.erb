@@ -1,0 +1,19 @@
+<div class="main posts-new">
+  <div class="container">
+    <h1 class="form-heading">スレッド編集</h1>
+    <%= form_tag("/posts/#{@post.id}/update") do %>
+      <div class="form">
+       <div class="form-body">
+        <p>タイトル</p>
+        <input name="title" value=""><br>
+        <p>内容</p>
+        <textarea name="content"></textarea>
+        <p>作成者</p>
+        <input name="name" value=""><br>
+        <input type="submit" value="編集"><br>
+        <%= link_to("削除", "/posts/#{@post.id}/destroy",{method:"post"}) %>
+      </div>
+     </div>
+    <%end%>
+  </div>
+</div>

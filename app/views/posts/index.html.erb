@@ -7,13 +7,19 @@
   　<option value="タイトル（降順）">タイトル（降順）</option>
   　<option value="タイトル（昇順）">タイトル（昇順）</option>
     </select>
+    <div class="post-menus">
+        <%= link_to("新規", "/posts/new") %>
+    </div>
     <% @posts.each do |post| %>
       <div class="posts-index-item">
         <p>
-        <%=post.title%><br>
+        <%=link_to(post.title,"/posts/#{post.id}")%><br>
         <%=post.updated_at%><br>
         <%=post.name%>
         </p>
+      </div>
+      <div class="post-menus">
+        <%= link_to("編集", "/posts/#{post.id}/edit") %>
       </div>
     <% end %>
   </div>
