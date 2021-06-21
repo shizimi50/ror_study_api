@@ -19,9 +19,11 @@ module Api
             def create
                 comment = Comment.new(comment_params)
                 if comment.save
-                    render json: { status: 200, message: "success", data: { post: comment } }
-                else comment.comment.blank?
-                    response_bad_request                        
+                    render json: { status: 200, message: "success", data: { comment: comment } }
+                elsif comment.comment.blank?
+                    response_bad_request_content
+                else
+                    render status: 400, json: { status: 400, message: "文字数を確認ください" }
                 end
             end
 

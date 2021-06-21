@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_08_044952) do
+ActiveRecord::Schema.define(version: 2021_06_16_014709) do
 
   create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "comment", null: false
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 2021_06_08_044952) do
     t.string "post_created_by", default: "名無し"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "comment_count", default: 0
   end
 
 end
