@@ -49,26 +49,22 @@ module Api
 
             # GET | api/v1/posts/:id
             def show
-                render json: { status: 200, message: "success", data: { post: @post, comment_count: comment_count }}
-            end
-
-            # GET | api/v1/posts/:id/specific_comments(掲示板詳細+それに紐づくコメントの詳細）
-            def specific_comments
                 sortkey = params[:sortkey] #ソートパラメータ
                 @comments = @post.comments
+                @comment_count = @comments.count
                 if sortkey == "sort1"
-                    render json: { status: 200, message: "Loaded some comments", data: @comments.order(created_at: "DESC")}                           
+                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(created_at: "DESC")}}                  
                 elsif sortkey == "sort2"
-                    render json: { status: 200, message: "Loaded some comments", data: @comments.order(created_at: "ASC")}                
+                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(created_at: "ASC")}}                         
                 elsif sortkey == "sort3"
-                    render json: { status: 200, message: "Loaded some comments", data: @comments.order(comment_created_by: "DESC")}                
+                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(comment_created_by: "DESC")}}                  
                 elsif sortkey == "sort4"
-                    render json: { status: 200, message: "Loaded some comments", data: @comments.order(comment_created_by: "ASC")}                
+                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(comment_created_by: "ASC")}}             
                 else
-                    render json: { status: 'Success', message: 'Loaded some comments', data: @comments}
+                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments}}
                 end
             end
-            
+
             # POST | api/v1/posts
             def create
                 post = Post.new(post_params)
@@ -125,7 +121,6 @@ module Api
                         }.compact    
                     }
             end
-
 
             def post_params
                 params.permit(:title, :content, :post_created_by)

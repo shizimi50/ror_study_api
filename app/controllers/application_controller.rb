@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::API
 end
 
-
 # 400 Bad Request
 def response_bad_request_title
     render status: 400, json: { status: 400, message: "必須項目のタイトルがありません" }
