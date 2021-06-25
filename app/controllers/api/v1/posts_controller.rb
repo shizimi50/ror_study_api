@@ -1,7 +1,7 @@
 module Api
     module V1
         class PostsController < ApplicationController
-            before_action :set_post, only: [:show, :specific_comments, :update, :destroy]
+            before_action :set_post, only: [:show, :update, :destroy]
             before_action :comment_count, only: [:index]
 
 
@@ -9,85 +9,36 @@ module Api
             def index
                 sortkey = params[:sortkey] #ソートパラメータ
                 q = params[:q] #検索パラメータ
-                if q == params[:q]
-                    results = Post.where('title LIKE ? OR content LIKE ? OR post_created_by LIKE ?', "%#{q}%", "%#{q}%", "%#{q}%");
-                    if sortkey == "sort1"
-                        render json: { status: 200, message: "success", data: { posts: results.order(updated_at: "DESC") } }                           
-                    elsif sortkey == "sort2"
-                        render json: { status: 200, message: "success", data: { posts: results.order(updated_at: "ASC") } }                
-                    elsif sortkey == "sort3"
-                        render json: { status: 200, message: "success", data: { posts: results.order(title: "DESC") } }                
-                    elsif sortkey == "sort4"
-                        render json: { status: 200, message: "success", data: { posts: results.order(title: "ASC") } }                
-                    elsif sortkey == "sort5"
-                        render json: { status: 200, message: "success", data: { posts: results.order(comment_count: "DESC") } }                
-                    elsif sortkey == "sort6"
-                        render json: { status: 200, message: "success", data: { posts: results.order(comment_count: "ASC") } } 
-                    else
-                        render json: { status: 200, message: "success", data: { posts: results } }                      
-                    end
-                elsif q == ''
-                    render json: { status: 200, message: "success", data: { posts: '' } }
-                else #検索されていない場合
-                    if sortkey == "sort1"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(updated_at: "DESC") } }                           
-                    elsif sortkey == "sort2"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(updated_at: "ASC") } }                
-                    elsif sortkey == "sort3"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(title: "DESC") } }                
-                    elsif sortkey == "sort4"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(title: "ASC") } }                
-                    elsif sortkey == "sort5"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(comment_count: "DESC") } }                
-                    elsif sortkey == "sort6"
-                        render json: { status: 200, message: "success", data: { posts: @posts.order(comment_count: "ASC") } } 
-                    else
-                        render json: { status: 200, message: "success", data: { posts: @posts } }                      
-                    end                     
+                results = Post.where('title LIKE ? OR content LIKE ? OR post_created_by LIKE ?', "%#{q}%", "%#{q}%", "%#{q}%");
+                if q.blank? #検キーが入力されていない場合
+                    render json: { status: 200, message: "success", data: { posts: results.order(sortkey) }}  
+                else 
+                    render json: { status: 200, message: "success", data: { posts: results.order(sortkey) }}  
                 end
             end
 
             # GET | api/v1/posts/:id
             def show
-                sortkey = params[:sortkey] #ソートパラメータ
-                @comments = @post.comments
-                @comment_count = @comments.count
-                if sortkey == "sort1"
-                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(created_at: "DESC")}}                  
-                elsif sortkey == "sort2"
-                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(created_at: "ASC")}}                         
-                elsif sortkey == "sort3"
-                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(comment_created_by: "DESC")}}                  
-                elsif sortkey == "sort4"
-                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments.order(comment_created_by: "ASC")}}             
-                else
-                    render json: { status: 200, message: "Loaded some comments", data: { post: @post, comment_count: @comment_count, comment: @comments}}
-                end
+                render json: { status: 200, message: "success", data: { post: @post } }
             end
 
             # POST | api/v1/posts
             def create
                 post = Post.new(post_params)
+                post[:post_created_by] = '名無し'
                 if post.save
                     render json: { status: 200, message: "success", data: { post: post } }
-                elsif post.title.blank?
-                    response_bad_request_title                      
-                elsif post.content.blank?
-                    response_bad_request_content
                 else
-                    render status: 400, json: { status: 400, message: "文字数を確認ください" }
+                    render json: { status: 400, message: post.errors.full_messages }
                 end
             end
 
             # PUT | api/v1/posts/:id
             def update
-                if @post.title.blank?
-                    response_bad_request_title                      
-                elsif @post.content.blank?
-                    response_bad_request_content
-                else                
-                    @post.update(post_params)
+                if @post.update(post_params)
                     render json: { status: 200, message: "success", data: { post: @post } }
+                else                
+                    render json: { status: 400, message: @post.errors.full_messages }
                 end
             end
 
