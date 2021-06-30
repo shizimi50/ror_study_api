@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoR Study API</title>
+    <link rel="stylesheet" href="style/style.css">
+    <!-- Bootstrap CSS -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+    crossorigin="anonymous"
+    />
+    <!-- fontawesome -->
+    <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+</head>
+<body>
+    <section>
+        <div class="section-header">
+            <h1>投稿 新規</h1>
+        </div>
+        <div class="section-body">
+
+            <form id="createpost_form" style="max-width: 600px; margin: 0 auto;" class="needs-validation" novalidate >
+                <div class="form-group">
+                    <label for="title">タイトル</label><small class="text-danger"> ※ 必須（140文字以内）</small>
+                    <input type="text" name="title" id="title" class="form-control" required >
+                    <div class="err_msg mb-4 text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="content">内容</label><small class="text-danger"> ※ 必須（1,000文字以内）</small>
+                    <textarea name="content" id="content" class="form-control" required ></textarea>
+                    <div class="err_msg mb-4 text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="post_created_by">作成者</label>
+                    <input type="text" name="post_created_by" id="post_created_by" class="form-control">
+                    
+                </div>
+
+                <div class="text-center row" style="max-width: 200px; margin: 30px auto;">
+                    <div class="col-6">
+                        <input id="createpost_btn" type="button" class="btn btn-secondary text-white" value="登録" onclick="formCheck()">
+                    </div>
+                    <div class="col-6 mt-2">
+                        <a href="index.html"><span>戻る</span></a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </section>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    "use strict";
+
+
+        // 投稿新規作成の処理
+        function createPostApi() {
+            let createPostForm = document.getElementById("createpost_form");
+            let createPostBtn = document.getElementById("createpost_btn");
+            let createPostUrl = "http://127.0.0.1:3001/api/v1/posts";
+
+            let createPostFormData = new FormData(createPostForm); //フォームの入力データを取得（name=key, 送信値=値）で返す
+
+            fetch(createPostUrl,{
+                method: 'POST',
+                body: createPostFormData,
+            }).then((response) => {                    
+                if(!response.ok){
+                    throw new Error(`${response.status} ${response.statusText}`)
+                }
+                alert("登録が完了しました！")
+                location.href= 'index.html';
+                
+            }).catch((error)=>{
+                console.log(error);
+            });
+        };
+
+
+        // フォームチェック処理
+        function formCheck() {
+
+            let errMsg_0 = document.querySelectorAll(".err_msg")[0] //titleエラーメッセージタグ取得
+            let errMsg_1 = document.querySelectorAll(".err_msg")[1] //contentエラーメッセージタグ取得
+
+            errMsg_0.innerHTML = "" //titleメッセージ初期化
+            errMsg_1.innerHTML = "" //contentメッセージ初期化
+            
+            title.classList.remove('input-invalid'); //titleエラー用border削除
+            content.classList.remove('input-invalid'); //contentエラー用border削除
+
+            if (title.value == '') {
+                errMsg_0.innerHTML = "「タイトル」を入力してください"
+                title.classList.add('input-invalid');
+
+            } else if (title.value.length > 140){
+                errMsg_0.innerHTML = "「タイトル」の文字数は140文字以内で入力してください"
+                title.classList.add('input-invalid');
+            }
+
+            if (content.value == ''){
+                errMsg_1.innerHTML = "「内容」を入力してください"
+                content.classList.add('input-invalid');
+
+            } else if (content.value.length > 1000) {
+                errMsg_1.innerHTML = "「内容」の文字数は1000文字以内で入力してください";
+                content.classList.add('input-invalid');
+            }
+
+            let errorForm = document.querySelector(".input-invalid")
+
+            if (!errorForm){
+                createPostApi()
+            }
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoR Study API</title>
+    <link rel="stylesheet" href="style/style.css">
+    <!-- Bootstrap CSS -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+    crossorigin="anonymous"
+    />
+    <!-- fontawesome -->
+    <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+</head>
+<body>
+    <section>
+        <div class="section-header">
+            <h1>投稿一覧</h1>
+        </div>
+        <div class="section-middle-header">
+            <div>
+                <div class="input-group mb-2" style="max-width: 600px; margin: 0 auto;">
+                    <input class="form-control" id="search_keyword" type="text" placeholder="タイトル  内容  作成者から検索">
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-secondary" onclick="allPostsApi()">検索</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4" style="max-width: 600px; margin: 0 auto;">
+                <div class="col-4">
+                    <a href="newpost.html"><button type="button" class="btn btn-secondary">新規</button></a>
+                </div>
+                <div class="col-8 form-group">
+                    <select class="form-control" name="select_sort">
+                        <option value="updated_at DESC">更新日時（降順）</option>
+                        <option value="created_at ASC">更新日時（昇順）</option>
+                        <option value="title DESC">タイトル（降順）</option>
+                        <option value="title ASC">タイトル（昇順）</option>
+                        <option value="comment_count DESC">コメント数（降順）</option>
+                        <option value="comment_count ASC">コメント数（昇順）</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-body">
+            <div id="all_posts" class="m-5">掲示板一覧</div>
+        </div>
+    </section>
+
+
+
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    "use strict";
+
+    window.addEventListener('load', () => {
+        
+        // 全ての投稿データを取得
+        allPostsApi(); 
+
+        // 投稿ソートキーを取得
+        document.querySelector("select[name=select_sort]").addEventListener('change', function() {
+            allPostsApi()
+        })
+
+    });
+
+    
+    // 全投稿のデータを取得
+    async function allPostsApi() {
+
+        let post = ''; //取得した投稿データを入れる変数
+        let q = document.getElementById("search_keyword").value //検索値を取得
+
+        // ソート機能
+        let sortkey = document.getElementsByName('select_sort')[0].value //ソートキー取得
+
+        await fetch(`http://127.0.0.1:3001/api/v1/posts?sortkey=${sortkey}&q=${q}`,{ 
+            method: 'GET',
+            headers : { "Content-type" : "application/x-www-form-urlencoded; charset=utf-8" },
+        }).then(postResponse => postResponse.json())
+          .then(postData => {
+            console.log('Success:', postData);
+            
+            //comment_countsを分解する処理
+            postData.data.posts.forEach(element => {
+
+                // 更新日時の成形
+                let ud = new Date(element.updated_at)
+                let updated_at_format = ud.getFullYear() + '年' + (ud.getMonth() + 1) + '月' + ud.getDate() + '日 ' + ud.getHours() + '時' + ud.getMinutes() + '分';
+
+                post += `<div class="card shadow-sm mb-5">`
+
+                post += '<div class="card-body">'
+                post += `<h4 class="card-text posttitle" onClick="location.href='detailpost.html?id=${element.id}'">タイトル：${element.title}</h4>`
+                post += `<small class="text-muted text-small">コメント数（${element.comment_count}）</small>`
+                post += `<p class="card-text">更新日時：${updated_at_format}</p>`
+                post += `<p class="card-text">作成者：${element.post_created_by}</p>`
+                post += `<button type="button" class="btn btn-sm btn-outline-secondary" onClick="location.href='editpost.html?id=${element.id}'">`
+                post += '<font style="vertical-align: inherit;">編集</font></button>'
+                post += '</div>'
+
+                post += '</div>'
+
+                document.getElementById('all_posts').innerHTML = post
+            })
+        }).catch((error)=>{
+            console.log(error);
+        })
+    };
+
+
+
+    </script>
+</body>
+
+</html>

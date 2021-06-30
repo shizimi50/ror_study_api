@@ -1,0 +1,29 @@
+body {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;;
+}
+
+.section-header {
+    text-align: center;
+    margin: 70px 0px auto;
+}
+.section-middle-header {
+    text-align: center;
+    max-width: 50%;
+    margin: 0 auto;
+}
+.section-body {
+    max-width: 50%;
+    margin: 0px auto;
+}
+.posttitle {
+    cursor: pointer;
+    color : #1e4cb1;
+    transition: color 0.3s;
+}
+.posttitle:hover {
+    color : #247cc4;
+    text-decoration:underline;
+}
+.input-invalid {
+    border: 1px solid #f50000!important;
+}
