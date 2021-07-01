@@ -1,60 +1,55 @@
 class PostsController < ApplicationController
+  protect_from_forgery unless: -> { request.format.json? }
   protect_from_forgery
+  protect_from_forgery with: :null_session
+  skip_before_action :verify_authenticity_token
   require 'json'
   def index
-    #@posts = Post.all.order(updated_at: :desc)
-    #@posts = Post.all.order(updated_at: :asc)
-    #@posts = Post.all.order(title: :desc)
-    #@posts = Post.all.order(title: :asc)
-    @posts = Post.all
-  end
-  def get
-    @post=Post.all
-    json_hash=@post
-    render json: json_hash
+    #post = Post.all.order(updated_at: :desc) 
+    #post = Post.all.order(updated_at: :asc)
+    #post = Post.all.order(title: :desc)
+    #post = Post.all.order(title: :asc)
+    post = Post.all.each do|p|
+      p.count=p.count_post_id
+    end
+    post=post.sort_by{|p| -p.count} #降順
+    #post=post.sort_by{|p| p.count}　#昇順
+    render json: {status:200,data:post}
   end
   def create
-    #@post=Post.new(title: params[:title],content: params[:content],name: params[:name])
-    #@post.save
-    json_str  = request.body.read     
-    json_hash = JSON.parse(json_str)  
-    @post=Post.new(title: json_hash["title"],content: json_hash["content"],name: json_hash["name"])
-    @post.save
-    json_hash=@post
-    render json: json_hash
-    #redirect_to("/posts/index")
+    post=Post.new(title: params[:title],content: params[:content],name: params[:name])
+    post.save
+    if post.valid?
+      render json: {status:200,data:post}
+    else
+      render json: {status:400,message:"error"}
+    end
   end
-  def edit
-    json_str  = request.body.read     
-    json_hash = JSON.parse(json_str)  
-    @post=Post.find_by(id: json_hash["id"])
-    @post.title= json_hash["title"]
-    @post.content= json_hash["content"]
-    @post.name= json_hash["name"]
-    @post.save
-    json_hash=@post
-    render json: json_hash
-    #@post = Post.find_by(id: params[:id])
+  def update
+    post=Post.find_by(id:params[:id])
+    post.title= params[:title]
+    post.content= params[:content]
+    post.name=params[:name]
+    post.save
+    render json: {status:200,data:post}
   end
   def count
-    @post=Post.all
-    cnt=@post.length
-    render json: {status:200,count:cnt}
+    post=Post.all
+    cnt=post.length
+    render json: {status:200,data:cnt}
   end
   def destroy
-    json_str  = request.body.read     
-    json_hash = JSON.parse(json_str)  
-    @post=Post.find_by(id: json_hash["id"])
-    @post.destroy
+    post=Post.find_by(id:params[:id])
+    post.destroy
     render json: {status:200}
-    #redirect_to("/posts/index")
   end
-  def show
-    json_str  = request.body.read     
-    json_hash = JSON.parse(json_str)  
-    @post=Post.find_by(id: json_hash["id"])
-    json_hash=@post
-    render json: json_hash
+  def show 
+    post=Post.find_by(id:params[:id])
+    render json: {status:200,data:post}
+  end
+  def search
+    post = Post.search(params[:keyword])
+    render json: {status:200,data:post}
   end
 
 end

@@ -20,4 +20,5 @@ module StudyApi
     # config.eager_load_paths << Rails.root.join("extras")
     config.time_zone = 'Tokyo'
   end
+
 end
